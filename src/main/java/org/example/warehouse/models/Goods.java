@@ -2,6 +2,7 @@ package org.example.warehouse.models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "goods")
@@ -17,25 +18,41 @@ public class Goods implements Serializable {
     @Column(name = "name")
     private String name;
 
-
-    /**
-     * Группа товара
-     */
-    @Column(name = "grup_id")
-    private Long grupId;
     @Column(name = "price")
     private Double price;
     @Column(name = "quantity")
-    private Integer quantity;
+    private Long quantity;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
+
+    @OneToMany(mappedBy = "goodsId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Waybill> waybills;
+
+    @OneToMany(mappedBy = "goods",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<WriteOff> writeOffs;
+
+    @Column(name = "status")
+    private String status;
 
     public Goods() {
     }
 
-    public Goods(String name, Long grupId, Double price, Integer quantity) {
-        this.name = name;
-        this.grupId = grupId;
-        this.price = price;
-        this.quantity = quantity;
+    public Set<WriteOff> getWriteOffs() {
+        return writeOffs;
+    }
+
+    public void setWriteOffs(Set<WriteOff> writeOffs) {
+        this.writeOffs = writeOffs;
+    }
+
+    public Set<Waybill> getWaybills() {
+        return waybills;
+    }
+
+    public void setWaybills(Set<Waybill> waybills) {
+        this.waybills = waybills;
     }
 
     public Long getId() {
@@ -46,15 +63,13 @@ public class Goods implements Serializable {
         return name;
     }
 
-    public Long getGrupId() {
-        return grupId;
-    }
+
 
     public Double getPrice() {
         return price;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
@@ -63,15 +78,29 @@ public class Goods implements Serializable {
         this.name = name;
     }
 
-    public void setGrupId(Long grupId) {
-        this.grupId = grupId;
-    }
 
     public void setPrice(Double price) {
         this.price = price;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

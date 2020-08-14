@@ -4,11 +4,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.example.warehouse.models.Goods;
+import org.example.warehouse.models.Group;
+import org.example.warehouse.models.Waybill;
 import org.example.warehouse.repository.GoodsRepository;
+import org.example.warehouse.repository.GroupRepository;
+import org.example.warehouse.service.ConfirmationService;
+import org.example.warehouse.service.TransactionService;
+import org.example.warehouse.service.WaybillService;
+import org.example.warehouse.service.WriteOffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+//import org.hibernate.dialect.PostgreSQL9Dialect
+//import org.example.warehouse.models
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +30,12 @@ public class MainController {
      */
     private GoodsRepository repoGoods;
     @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
+    private TransactionService transactionService;
+
+    @Autowired
     public MainController(GoodsRepository repoGoods) {
         this.repoGoods = repoGoods;
     }
@@ -27,15 +43,40 @@ public class MainController {
     }
 
 
-    @PostMapping("/goods")
+
+    @PostMapping("/waybill")
     //@ApiOperation()
     /**
      * Создание нового продукта
      */
-    public ResponseEntity<?> create(@RequestBody Goods goods) {
-        repoGoods.save(goods);
+    public ResponseEntity<?> addProduct(@RequestBody WaybillService waybillService) { //Goods goods  Group group
+        transactionService.goodsReception(waybillService);
+        //repoGoods.save(goods);
+        //groupRepository.save(group);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    //write-off confirmation
+    @PostMapping("/write-off_confirmation")
+    /**
+     * Подтверждение заявки на списание
+     */
+    public ResponseEntity<?> writeOffConfirmation(@RequestBody ConfirmationService confirmationService) {
+        transactionService.writeOffConfirmation(confirmationService);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/write_off")
+    /**
+     * Заявка на списание
+     */
+    public ResponseEntity<?> writeOff(@RequestBody WriteOffService writeOffService) {
+        transactionService.writeOffApplication(writeOffService);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+
     @GetMapping("/goods")
     /**
      * Запрос всех продуктов
@@ -84,8 +125,15 @@ public class MainController {
      */
     public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
         Optional<Goods> goods = repoGoods.findById(id);
-        repoGoods.delete(goods.get());
-        return new ResponseEntity<>(HttpStatus.OK);
+        boolean isGoods = false;
+        if (goods.isPresent()) {
+            repoGoods.delete(goods.get());
+            isGoods = true;
+        }
+
+        return isGoods
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

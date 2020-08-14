@@ -1,11 +1,9 @@
 package org.example.warehouse.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
+import java.util.Set;
 
 @Entity
 /**
@@ -15,20 +13,27 @@ public class Purchases implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    /**
+     * Дата покупки
+     */
     private Date date;
     private String name;
     private Double price;
-    private Integer quantity;
+    private Long quantity;
+
+    @OneToMany(mappedBy = "purchases", cascade = CascadeType.ALL)
+    private Set<PurchaseRequest> purchaseRequestsSet;
 
     public Purchases() {
     }
 
-    public Purchases(Date date, String name, Double price, Integer quantity) {
-        this.date = date;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
+
+    public Set<PurchaseRequest> getPurchaseRequestsSet() {
+        return purchaseRequestsSet;
+    }
+
+    public void setPurchaseRequestsSet(Set<PurchaseRequest> purchaseRequestsSet) {
+        this.purchaseRequestsSet = purchaseRequestsSet;
     }
 
     public Long getId() {
@@ -61,11 +66,11 @@ public class Purchases implements Serializable {
         this.price = price;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Long quantity) {
         this.quantity = quantity;
     }
 }
