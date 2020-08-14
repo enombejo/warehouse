@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!--Добавляю таблицы    -->
+    <changeSet id="7" author="fadeikin">
+<!--   Накладная на приход товара-->
+        <createTable tableName="waybill">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true" primaryKeyName="waybill_pkey"/>
+            </column>
+<!--            Какой товар-->
+            <column name="product" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Количество-->
+            <column name="amount" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+<!--            К какой группе относится-->
+            <column name="group_product" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Поставщик-->
+            <column name="supplier" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Стоимость товара-->
+            <column name="price" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+<!--            Номер продукта на складе-->
+            <column name="id_product" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+<!--            Дата составления накладной-->
+            <column name="waybill_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+<!--   Таблица списания товара-->
+        <createTable tableName="write_off">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+<!--            Какой продукт списывать-->
+            <column name="id_product" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+<!--            Текстовое описание списываемого продукта-->
+            <column name="product" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Текстовое описание группы списываемого продукта-->
+            <column name="group_product" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+<!--            Количество товара на списание-->
+            <column name="amount" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+<!--            Кто списывает (ФИО)-->
+            <column name="person_in_charge" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Причина списания-->
+            <column name="cause" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+<!--            Дата подачи заявки на списание-->
+            <column name="application_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+<!--   Таблица для подтверждающего лица-->
+        <createTable tableName="confirmation">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+<!--            Id заявки на списане-->
+            <column name="id_write_off" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+<!--            ФИО -->
+            <column name="applicant" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+<!--            Колонка подтверждения-->
+            <column name="yes_no" type="bool">
+                <constraints nullable="true"/>
+            </column>
+<!--            Дата подтверждения списания-->
+            <column name="confirmation_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+<!--   Заявка на покупку-->
+        <createTable tableName="purchase_request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" unique="true"/>
+            </column>
+<!--            Количество заказываемого товара-->
+            <column name="amount" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+<!--            Какой продукт-->
+            <column name="id_product" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+<!--            Номер покупки-->
+            <column name="id_purchases" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+<!--            Общая цена-->
+            <column name="price" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
